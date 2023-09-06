@@ -2,13 +2,6 @@
   "title": "NextBus predictions",
   "config": {
     "step": {
-      "user": {
-        "data": {
-          "agency": "Metro agency",
-          "route": "Route",
-          "stop": "Stop"
-        }
-      },
       "agency": {
         "title": "Select metro agency",
         "data": {
