@@ -101,7 +101,7 @@ class NextBusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         }
 
         # Abort if duplicate entries exist
-        self._async_abort_entries_match(self.data)
+        self._async_abort_entries_match(data)
 
         return self.async_create_entry(
             title=(
