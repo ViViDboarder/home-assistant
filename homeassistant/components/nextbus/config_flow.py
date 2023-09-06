@@ -48,6 +48,22 @@ def _get_stop_tags(
     }
 
 
+def _validate_import(client: NextBusClient, agency: str, route: str, stop: str) -> str:
+    agency_tags = _get_agency_tags(client)
+    if agency not in agency_tags:
+        return "invalid_agency"
+
+    route_tags = _get_route_tags(client, agency)
+    if route not in route_tags:
+        return "invalid_route"
+
+    stop_tags = _get_stop_tags(client, agency, route)
+    if stop not in stop_tags:
+        return "invalid_stop"
+
+    return ""
+
+
 class NextBusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle Nextbus configuration."""
 
@@ -69,23 +85,14 @@ class NextBusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         route = config_input[CONF_ROUTE]
         stop = config_input[CONF_STOP]
 
-        agency_tags = await self.hass.async_add_executor_job(
-            _get_agency_tags, self._client
-        )
-        if agency not in agency_tags:
-            return self.async_abort(reason="invalid_agency")
-
-        route_tags = await self.hass.async_add_executor_job(
-            _get_route_tags, self._client, agency
-        )
-        if route not in route_tags:
-            return self.async_abort(reason="invalid_route")
-
-        stop_tags = await self.hass.async_add_executor_job(
-            _get_stop_tags, self._client, agency, route
-        )
-        if stop not in stop_tags:
-            return self.async_abort(reason="invalid_stop")
+        if validation_error := await self.hass.async_add_executor_job(
+            _validate_import,
+            self._client,
+            agency,
+            route,
+            stop,
+        ):
+            return self.async_abort(reason=validation_error)
 
         data = {
             CONF_AGENCY: agency,
