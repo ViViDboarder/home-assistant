@@ -72,6 +72,7 @@ async def async_setup_entry(
 
     sensor = NextBusDepartureSensor(
         client,
+        config.entry_id,
         config.data[CONF_AGENCY],
         config.data[CONF_ROUTE],
         config.data[CONF_STOP],
@@ -95,12 +96,13 @@ class NextBusDepartureSensor(SensorEntity):
     _attr_device_class = SensorDeviceClass.TIMESTAMP
     _attr_icon = "mdi:bus"
 
-    def __init__(self, client, agency, route, stop, name=None):
+    def __init__(self, client, entry_id, agency, route, stop, name=None):
         """Initialize sensor with all required config."""
         self.agency = agency
         self.route = route
         self.stop = stop
         self._attr_extra_state_attributes = {}
+        self._attr_unique_id = entry_id
 
         # Maybe pull a more user friendly name from the API here
         self._attr_name = f"{agency} {route}"
