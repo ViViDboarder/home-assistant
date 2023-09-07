@@ -78,9 +78,7 @@ async def async_setup_entry(
         config.data.get(CONF_NAME),
     )
 
-    async_add_entities((sensor,))
-
-    await hass.async_add_executor_job(sensor.update)
+    async_add_entities((sensor,), True)
 
 
 class NextBusDepartureSensor(SensorEntity):
@@ -182,4 +180,3 @@ class NextBusDepartureSensor(SensorEntity):
         self._attr_native_value = utc_from_timestamp(
             int(latest_prediction["epochTime"]) / 1000
         )
-        self.async_write_ha_state()
